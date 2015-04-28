@@ -8,11 +8,6 @@
 
 import java.util.*;
 import java.util.Scanner;
-import java.lang.Object;
-import java.io.InputStream;
-import java.lang.Object;
-import java.io.InputStream;
-import java.io.IOException;
 
 
 
@@ -31,7 +26,7 @@ public class Thread_Pipe {
         }
         numbers = new int [num];
         for(int i=0; i<num; i++){
-            numbers[i] = random.nextInt(1000000)+1;
+            numbers[i] = random.nextInt(200)+1;
         }
     }
     
@@ -131,13 +126,68 @@ public class Thread_Pipe {
     public static void sortTheArray(){
         //Arrays.sort(numbers);
         
-        Thread[] sectionThreads = new Thread[32];
+        SectionThread[] sectionThreads = new SectionThread[32];
         for(int i=0; i<sectionThreads.length; i++){
-            sectionThreads[i] = new Thread(new SectionThread(numbers, i));
+            sectionThreads[i] = new SectionThread(numbers, i);
         }
+        MergeThread[] mergeThreads16 = new MergeThread[16];
+        for(int i=0; i<mergeThreads16.length; i++){
+            mergeThreads16[i] = new MergeThread( i,
+                    sectionThreads[2*i].output(), 
+                    sectionThreads[2*i+1].output()
+            );
+        }
+        MergeThread[] mergeThreads8 = new MergeThread[8];
+        for(int i=0; i<mergeThreads8.length; i++){
+            mergeThreads8[i] = new MergeThread( i,
+                    mergeThreads16[2*i].output(), 
+                    mergeThreads16[2*i+1].output()
+            );
+        }
+        MergeThread[] mergeThreads4 = new MergeThread[4];
+        for(int i=0; i<mergeThreads4.length; i++){
+            mergeThreads4[i] = new MergeThread( i,
+                    mergeThreads8[2*i].output(), 
+                    mergeThreads8[2*i+1].output()
+            );
+        }
+        MergeThread[] mergeThreads2 = new MergeThread[2];
+        for(int i=0; i<mergeThreads2.length; i++){
+            mergeThreads2[i] = new MergeThread( i,
+                    mergeThreads4[2*i].output(), 
+                    mergeThreads4[2*i+1].output()
+            );
+        }
+        int [] tempNumbers = new int[numbers.length];
+        MergeThread mergeThread1 = new MergeThread(100,
+                    mergeThreads2[0].output(), 
+                    mergeThreads2[1].output()
+            );
+        Thread writeThread = new Thread(new WriteThread(mergeThread1.output(), tempNumbers));
         
-        
-        
+        writeThread.start();
+        mergeThread1.start();
+        for(MergeThread t : mergeThreads2){
+            t.start();
+        }
+        for(MergeThread t : mergeThreads4){
+            t.start();
+        }
+        for(MergeThread t : mergeThreads8){
+            t.start();
+        }
+        for(MergeThread t : mergeThreads16){
+            t.start();
+        }
+        for(SectionThread t : sectionThreads){
+            t.start();
+        }
+        try{
+            writeThread.join();
+        }catch(InterruptedException e){
+            System.out.println(e);
+        }
+        numbers = tempNumbers;
         
         //PipedInputStream;
         //PipedOutputStream;
