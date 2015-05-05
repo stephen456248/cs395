@@ -42,8 +42,9 @@ public class MergeThread extends Thread {
             this.outputStream = new ObjectOutputStream(this.output);
             this.inputStream1 = new ObjectInputStream(this.input1);
             this.inputStream2 = new ObjectInputStream(this.input2);
-            left = (int)this.inputStream1.readInt();
-            right = (int)this.inputStream2.readInt();
+            left = this.inputStream1.readInt();
+            right = this.inputStream2.readInt();
+            
             while(left != -1 || right != -1){
                 if(left == -1){
                     //finish up right
@@ -61,6 +62,7 @@ public class MergeThread extends Thread {
                     right = this.inputStream2.readInt();
                 }
             }
+            this.outputStream.writeInt(-1);
             this.outputStream.close();
         }catch (IOException e){
             System.out.println(e);

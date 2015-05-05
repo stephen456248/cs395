@@ -30,19 +30,17 @@ public class WriteThread extends Thread {
         int index = 0;
         try{
             this.inputStream = new ObjectInputStream(this.input);
-            intToWrite = (int)this.inputStream.readObject();
+            intToWrite = this.inputStream.readInt();
             while(intToWrite != -1 && index < numbers.length){
                 this.numbers[index] = intToWrite;
                 index++;
-                intToWrite = (int)this.inputStream.readObject();
+                intToWrite = this.inputStream.readInt();
             }
+            this.inputStream.close();
         } catch (IOException e) {
             System.out.print(e);
             System.out.println(this.id);
-        }catch(ClassNotFoundException e){
-            System.out.println(e);
         }
-        System.out.println("writeThread started");
     }
     
 }

@@ -36,6 +36,7 @@ public class SectionThread extends Thread{
             for(int i=0; i<this.numbers.length/32; i++){
                 this.outputStream.writeInt(this.numbers[i+this.numbers.length/32*this.id]);
             }
+            this.outputStream.writeInt(-1);
             this.outputStream.close();
         }catch (IOException e){
             System.out.println(e);

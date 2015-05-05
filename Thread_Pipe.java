@@ -19,11 +19,11 @@ public class Thread_Pipe {
         System.out.print("How many integers do you want?  " );
         int num = 0;
         num = getNumberToGenerate();
-//        while(num < 1000000){
-//            System.out.println("The number needs to be larger than 1,000,000 ");
-//            System.out.print("How many integers do you want?  " );
-//            num = getNumberToGenerate();
-//        }
+        while(num < 1000000){
+            System.out.println("The number needs to be larger than 1,000,000 ");
+            System.out.print("How many integers do you want?  " );
+            num = getNumberToGenerate();
+        }
         numbers = new int [num];
         for(int i=0; i<num; i++){
             numbers[i] = random.nextInt(5000);
