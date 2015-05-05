@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PipedOutputStream;
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ import java.util.Arrays;
  */
 public class SectionThread extends Thread{
     PipedOutputStream output = new PipedOutputStream();
+    ObjectOutputStream outputStream;
     int [] numbers;
     int id;
     public SectionThread(int[] numbers, int id){
@@ -23,17 +25,18 @@ public class SectionThread extends Thread{
         Arrays.sort(numbers, id*numbers.length/32, numbers.length/32 +id*numbers.length/32);
     }
     
-    public PipedOutputStream output() {                //getter
+    public PipedOutputStream output() {
         return this.output;
     }
 
     public void run(){
         int index = 0;
         try{
+            this.outputStream = new ObjectOutputStream(this.output);
             for(int i=0; i<this.numbers.length/32; i++){
-                this.output.write(this.numbers[i+this.numbers.length/32*this.id]);
+                this.outputStream.writeInt(this.numbers[i+this.numbers.length/32*this.id]);
             }
-            this.output.close();
+            this.outputStream.close();
         }catch (IOException e){
             System.out.println(e);
         }

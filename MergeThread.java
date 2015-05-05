@@ -1,5 +1,7 @@
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
@@ -11,9 +13,12 @@ import java.io.PipedOutputStream;
  */
 public class MergeThread extends Thread {
     
-    PipedInputStream input1; 
-    PipedInputStream input2; 
+    PipedInputStream input1;
+    ObjectInputStream inputStream1;
+    PipedInputStream input2;
+    ObjectInputStream inputStream2;
     PipedOutputStream output = new PipedOutputStream();
+    ObjectOutputStream outputStream;
     int id;
     
     public MergeThread (
@@ -34,29 +39,31 @@ public class MergeThread extends Thread {
         int left;
         int right;
         try{
-            left = this.input1.read();
-            right = this.input2.read();
+            this.outputStream = new ObjectOutputStream(this.output);
+            this.inputStream1 = new ObjectInputStream(this.input1);
+            this.inputStream2 = new ObjectInputStream(this.input2);
+            left = (int)this.inputStream1.readInt();
+            right = (int)this.inputStream2.readInt();
             while(left != -1 || right != -1){
                 if(left == -1){
                     //finish up right
-                    this.output.write(right);
-                    right = this.input2.read();
+                    this.outputStream.writeInt(right);
+                    right = this.inputStream2.readInt();
                 }else if(right == -1){
                     //finish up left
-                    this.output.write(left);
-                    left = this.input1.read();
+                    this.outputStream.writeInt(left);
+                    left = this.inputStream1.readInt();
                 }else if(left <= right){
-                    this.output.write(left);
-                    left = this.input1.read();
+                    this.outputStream.writeInt(left);
+                    left = this.inputStream1.readInt();
                 }else{
-                    this.output.write(right);
-                    right = this.input2.read();
+                    this.outputStream.writeInt(right);
+                    right = this.inputStream2.readInt();
                 }
             }
-            this.output.close();
+            this.outputStream.close();
         }catch (IOException e){
-            System.out.print(e);
-            System.out.println(this.id);
+            System.out.println(e);
         }
     }
     

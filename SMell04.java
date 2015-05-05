@@ -8,8 +8,6 @@ import java.util.Random;
 import java.util.Scanner;
 import java.lang.Object;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 
 public class SMell04 {
 

@@ -1,5 +1,6 @@
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
@@ -11,6 +12,7 @@ import java.io.PipedOutputStream;
 public class WriteThread extends Thread {
     
     PipedInputStream input;
+    ObjectInputStream inputStream;
     int id;
     int[] numbers;
     
@@ -27,15 +29,18 @@ public class WriteThread extends Thread {
         int intToWrite;
         int index = 0;
         try{
-            intToWrite = this.input.read();
+            this.inputStream = new ObjectInputStream(this.input);
+            intToWrite = (int)this.inputStream.readObject();
             while(intToWrite != -1 && index < numbers.length){
                 this.numbers[index] = intToWrite;
                 index++;
-                intToWrite = this.input.read();
+                intToWrite = (int)this.inputStream.readObject();
             }
         } catch (IOException e) {
             System.out.print(e);
             System.out.println(this.id);
+        }catch(ClassNotFoundException e){
+            System.out.println(e);
         }
         System.out.println("writeThread started");
     }

@@ -19,14 +19,14 @@ public class Thread_Pipe {
         System.out.print("How many integers do you want?  " );
         int num = 0;
         num = getNumberToGenerate();
-        while(num < 1000000){
-            System.out.println("The number needs to be larger than 1,000,000 ");
-            System.out.print("How many integers do you want?  " );
-            num = getNumberToGenerate();
-        }
+//        while(num < 1000000){
+//            System.out.println("The number needs to be larger than 1,000,000 ");
+//            System.out.print("How many integers do you want?  " );
+//            num = getNumberToGenerate();
+//        }
         numbers = new int [num];
         for(int i=0; i<num; i++){
-            numbers[i] = random.nextInt(200)+1;
+            numbers[i] = random.nextInt(5000);
         }
     }
     
@@ -130,6 +130,7 @@ public class Thread_Pipe {
         for(int i=0; i<sectionThreads.length; i++){
             sectionThreads[i] = new SectionThread(numbers, i);
         }
+        
         MergeThread[] mergeThreads16 = new MergeThread[16];
         for(int i=0; i<mergeThreads16.length; i++){
             mergeThreads16[i] = new MergeThread( i,
@@ -164,24 +165,24 @@ public class Thread_Pipe {
                     mergeThreads2[1].output()
             );
         Thread writeThread = new Thread(new WriteThread(mergeThread1.output(), tempNumbers));
-        
-        writeThread.start();
-        mergeThread1.start();
-        for(MergeThread t : mergeThreads2){
-            t.start();
-        }
-        for(MergeThread t : mergeThreads4){
-            t.start();
-        }
-        for(MergeThread t : mergeThreads8){
+         
+        for(SectionThread t : sectionThreads){
             t.start();
         }
         for(MergeThread t : mergeThreads16){
             t.start();
         }
-        for(SectionThread t : sectionThreads){
+        for(MergeThread t : mergeThreads8){
             t.start();
         }
+        for(MergeThread t : mergeThreads4){
+            t.start();
+        }
+        for(MergeThread t : mergeThreads2){
+            t.start();
+        }
+        mergeThread1.start();
+        writeThread.start();
         try{
             writeThread.join();
         }catch(InterruptedException e){
